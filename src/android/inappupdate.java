@@ -133,7 +133,7 @@ public class inappupdate extends CordovaPlugin {
 				updateType = 1;
 			}
             try {
-                    appUpdateManager.startUpdateFlowForResult(appUpdateInfo, updateType, cordova.getActivity(),
+                    appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.FLEXIBLE, cordova.getActivity(),
                                     REQUEST_CODE);
             } catch (final Exception e) {
 				String str=e.getMessage();
