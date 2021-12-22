@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/cordova-plugin-codeplay-in-app-update/v16/TestStore/0
+/.vs/ProjectSettings.json
+/.vs/slnx.sqlite

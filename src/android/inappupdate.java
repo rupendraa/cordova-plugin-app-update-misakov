@@ -49,6 +49,7 @@ public class inappupdate extends CordovaPlugin {
 
 		if (action.equals("isUpdateAvailable"))
 		{
+			Toast.makeText(testParameter, "isUpdateAvailable", Toast.LENGTH_LONG).show();
 			// Checks that the platform will allow the specified type of update.
 			appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
 				if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
@@ -97,7 +98,7 @@ public class inappupdate extends CordovaPlugin {
 
 						try {
 
-							//Toast.makeText(testParameter, "Success - Will start update", Toast.LENGTH_LONG).show();
+							Toast.makeText(testParameter, "Success - Will start update", Toast.LENGTH_LONG).show();
 
 							appUpdateManager.startUpdateFlowForResult(
 									appUpdateInfo,
@@ -108,13 +109,13 @@ public class inappupdate extends CordovaPlugin {
 							e.printStackTrace();
 							String str=e.getMessage();
 							callbackContext.error(str);
-							//Toast.makeText(testParameter, "Error - "+str, Toast.LENGTH_LONG).show();
+							Toast.makeText(testParameter, "Error - "+str, Toast.LENGTH_LONG).show();
 						}
 					}
 					else
 					{
 						callbackContext.success("No update available");
-						//Toast.makeText(testParameter, "Else part executed - no update available", Toast.LENGTH_LONG).show();
+						Toast.makeText(testParameter, "Else part executed - no update available", Toast.LENGTH_LONG).show();
 
 					}
 				});
@@ -128,7 +129,7 @@ public class inappupdate extends CordovaPlugin {
 
 						try {
 
-							//Toast.makeText(testParameter, "Success - Will start update", Toast.LENGTH_LONG).show();
+							Toast.makeText(testParameter, "Success - Will start update", Toast.LENGTH_LONG).show();
 
 							appUpdateManager.startUpdateFlowForResult(
 									appUpdateInfo,
@@ -139,7 +140,7 @@ public class inappupdate extends CordovaPlugin {
 							e.printStackTrace();
 							String str=e.getMessage();
 							callbackContext.error(str);
-							//Toast.makeText(testParameter, "Error - "+str, Toast.LENGTH_LONG).show();
+							Toast.makeText(testParameter, "Error - "+str, Toast.LENGTH_LONG).show();
 						}
 
 
@@ -148,7 +149,7 @@ public class inappupdate extends CordovaPlugin {
 					else
 					{
 						callbackContext.success("No update available");
-						//Toast.makeText(testParameter, "Else part executed - no update available", Toast.LENGTH_LONG).show();
+						Toast.makeText(testParameter, "Else part executed - no update available", Toast.LENGTH_LONG).show();
 
 					}
 				});
