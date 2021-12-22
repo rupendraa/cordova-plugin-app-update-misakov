@@ -27,22 +27,28 @@ import com.google.android.play.core.tasks.Task;
  */
 public class inappupdate extends CordovaPlugin {
 
-
 	CallbackContext _callbackContex;
+
+	public int REQUEST_CODE = 7;
+    private static String IN_APP_UPDATE_TYPE = "FLEXIBLE";
+
+	private static AppUpdateManager appUpdateManager;
+    private static InstallStateUpdatedListener listener;
+	private static Context testParameter;
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
 
 
-		_callbackContex=callbackContext;
-
-		Context testParameter = (cordova.getActivity()).getBaseContext();
+		_callbackContex = callbackContext;
+ 
+		testParameter = (cordova.getActivity()).getBaseContext();
 
 
 
 
 		// Creates instance of the manager.
-		AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(testParameter);
+		appUpdateManager = AppUpdateManagerFactory.create(testParameter);
 
 		// Returns an intent object that you use to check for an update.
 		Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
@@ -51,29 +57,25 @@ public class inappupdate extends CordovaPlugin {
 
 		if (action.equals("isUpdateAvailable"))
 		{
-			Toast.makeText(testParameter, "isUpdateAvailable", Toast.LENGTH_LONG).show();
-			callbackContext.success("Hello world !@!!!!");
 			// Checks that the platform will allow the specified type of update.
 			appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
 				
-				// if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-				// 		// For a flexible update, use AppUpdateType.FLEXIBLE
-				// 		&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
-				// {
+				if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+						// For a flexible update, use AppUpdateType.FLEXIBLE
+						&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
+				{
 
-				// 	//Toast.makeText(testParameter, "Success - Will start update", Toast.LENGTH_LONG).show();
+					Toast.makeText(testParameter, "Flexible update ready", Toast.LENGTH_LONG).show();
+					callbackContext.success("true");
 
-				// 	callbackContext.success("true");
+					// Request the update.
+				}
+				else
+				{
+					callbackContext.success("false");
+					Toast.makeText(testParameter, "No update available", Toast.LENGTH_LONG).show();
 
-
-				// 	// Request the update.
-				// }
-				// else
-				// {
-				// 	callbackContext.success("false");
-				// 	//Toast.makeText(testParameter, "Else part executed - no update available", Toast.LENGTH_LONG).show();
-
-				// }
+				}
 			});
 
 			return true;
@@ -83,92 +85,76 @@ public class inappupdate extends CordovaPlugin {
 		{
 			String updateType = args.getString(0);
 
-
-			Integer flxRimmediate=1;
-			if(updateType!="" && updateType!="null" && updateType.equals("flexible"))
+			if(updateType.equals("IMMEDIATE"))
 			{
-				flxRimmediate=0;
+				IN_APP_UPDATE_TYPE = "IMMEDIATE";
 			}
-
-
-
-
-			if(flxRimmediate==1)
-			{
-				appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-					if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-							&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE))
-					{
-
-						try {
-
-							Toast.makeText(testParameter, "Success - Will start update", Toast.LENGTH_LONG).show();
-
-							appUpdateManager.startUpdateFlowForResult(
-									appUpdateInfo,
-									AppUpdateType.IMMEDIATE,
-									cordova.getActivity(),
-									123);
-						} catch (IntentSender.SendIntentException e) {
-							e.printStackTrace();
-							String str=e.getMessage();
-							callbackContext.error(str);
-							Toast.makeText(testParameter, "Error - "+str, Toast.LENGTH_LONG).show();
-						}
-					}
-					else
-					{
-						callbackContext.success("No update available");
-						Toast.makeText(testParameter, "Else part executed - no update available", Toast.LENGTH_LONG).show();
-
-					}
-				});
-			}
-			else
-			{
-				appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-					if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-							&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
-					{
-
-						try {
-
-							Toast.makeText(testParameter, "Success - Will start update", Toast.LENGTH_LONG).show();
-
-							appUpdateManager.startUpdateFlowForResult(
-									appUpdateInfo,
-									AppUpdateType.FLEXIBLE,
-									cordova.getActivity(),
-									123);
-						} catch (IntentSender.SendIntentException e) {
-							e.printStackTrace();
-							String str=e.getMessage();
-							callbackContext.error(str);
-							Toast.makeText(testParameter, "Error - "+str, Toast.LENGTH_LONG).show();
-						}
-
-
-						// Request the update.
-					}
-					else
-					{
-						callbackContext.success("No update available");
-						Toast.makeText(testParameter, "Else part executed - no update available", Toast.LENGTH_LONG).show();
-
-					}
-				});
-			}
+			Toast.makeText(testParameter, "Update application....", Toast.LENGTH_LONG).show();
+			checkForUpdate(appUpdateInfo);
 
 		}
 
 		return false;
 	}
 
-	private void coolMethod(String message, CallbackContext callbackContext) {
-		if (message != null && message.length() > 0) {
-			callbackContext.success(message);
-		} else {
-			callbackContext.error("Expected one non-empty string argument.");
-		}
-	}
+	public void checkForUpdate(final AppUpdateInfo appUpdateInfo) {
+			int updateType = 0;
+            if (IN_APP_UPDATE_TYPE.equals("FLEXIBLE")) {
+                    listener = state -> {
+                            onStateUpdate(state);
+                    };
+                    appUpdateManager.registerListener(listener);
+            }else{
+				updateType = 1;
+			}
+            try {
+                    appUpdateManager.startUpdateFlowForResult(appUpdateInfo, updateType, cordova.getActivity(),
+                                    REQUEST_CODE);
+            } catch (final Exception e) {
+				
+                e.printStackTrace();
+				String str=e.getMessage();
+				callbackContext.error(str);
+				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
+            }
+    }
+
+    /* Displays the snackbar notification and call to action. */
+    private void popupSnackbarForCompleteUpdate() {
+            final Snackbar snackbar = Snackbar.make(layout, "An update has just been downloaded.",
+                            Snackbar.LENGTH_INDEFINITE);
+            snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
+            snackbar.show();
+    }
+
+	public void onStateUpdate(final InstallState state) {
+            if (state.installStatus() == InstallStatus.DOWNLOADED) {
+				Toast.makeText(testParameter, "Update downloaded! ", Toast.LENGTH_LONG).show();
+                    // After the update is downloaded, show a notification
+                    // and request user confirmation to restart the app.
+                    popupSnackbarForCompleteUpdate();
+            }
+    };
+
+	public void onResume(final boolean multitasking) {
+        super.onResume(multitasking);
+        appUpdateManager
+            .getAppUpdateInfo()
+            .addOnSuccessListener(
+                appUpdateInfo -> {
+                    if (IN_APP_UPDATE_TYPE.equals("FLEXIBLE") && appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                        popupSnackbarForCompleteUpdate();
+                    }
+
+                    if (appUpdateInfo.updateAvailability() ==
+                        UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+                        // If an in-app update is already running, resume the update.
+                        try {
+                            checkForUpdate(appUpdateInfo);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+    }
 }
