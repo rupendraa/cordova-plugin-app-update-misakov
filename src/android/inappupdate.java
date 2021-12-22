@@ -13,6 +13,7 @@ import android.content.IntentSender;
 import android.widget.Toast;
 import android.support.design.widget.Snackbar;
 import android.widget.FrameLayout;
+import android.util.Log;
 
 
 import com.google.android.play.core.appupdate.AppUpdateInfo;
@@ -110,9 +111,9 @@ public class inappupdate extends CordovaPlugin {
 			});
 			}
 			catch (final Exception e) {
-                e.printStackTrace();
 				String str=e.getMessage();
-				callbackContext.error(str);
+				String stackTrace = Log.getStackTraceString(e);
+				callbackContext.error(str+stackTrace);
 				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
             }
 
@@ -135,9 +136,9 @@ public class inappupdate extends CordovaPlugin {
                     appUpdateManager.startUpdateFlowForResult(appUpdateInfo, updateType, cordova.getActivity(),
                                     REQUEST_CODE);
             } catch (final Exception e) {
-                e.printStackTrace();
 				String str=e.getMessage();
-				_callbackContex.error(str);
+				String stackTrace = Log.getStackTraceString(e);
+				_callbackContex.error(str+stackTrace);
 				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
         }
     }
@@ -176,9 +177,9 @@ public class inappupdate extends CordovaPlugin {
                         try {
                             checkForUpdate(appUpdateInfo);
                         } catch (Exception e) {
-                            e.printStackTrace();
 							String str=e.getMessage();
-							_callbackContex.error(str);
+							String stackTrace = Log.getStackTraceString(e);
+							_callbackContex.error(str+stackTrace);
 							Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
                         }
                     }
