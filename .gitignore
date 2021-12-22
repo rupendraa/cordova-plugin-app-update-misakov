@@ -6,3 +6,5 @@
 /.vs/ProjectSettings.json
 /.vs/slnx.sqlite
 /.vs/cordova-plugin-codeplay-in-app-update/v16
+/.vs/cordova-plugin-codeplay-in-app-update/config/applicationhost.config
+/.vs/VSWorkspaceState.json
