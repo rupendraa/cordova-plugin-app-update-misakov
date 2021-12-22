@@ -2,6 +2,8 @@ package cordova.plugin.codeplay.in.app.update;
 
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.CallbackContext;
+import org.apache.cordova.CordovaInterface;
+import org.apache.cordova.CordovaWebView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,14 +13,13 @@ import android.content.IntentSender;
 import android.widget.Toast;
 import android.support.design.widget.Snackbar;
 
-
-
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 import com.google.android.play.core.install.model.InstallStatus;
+import com.google.android.play.core.install.InstallState;
 import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.tasks.Task;
 
@@ -38,6 +39,13 @@ public class inappupdate extends CordovaPlugin {
 	private static AppUpdateManager appUpdateManager;
     private static InstallStateUpdatedListener listener;
 	private static Context testParameter;
+	private FrameLayout layout;
+
+    @Override
+    public void initialize(final CordovaInterface cordova, final CordovaWebView webView) {
+            super.initialize(cordova, webView);
+            layout = (FrameLayout) webView.getView().getParent();
+    }
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -88,7 +96,23 @@ public class inappupdate extends CordovaPlugin {
 				IN_APP_UPDATE_TYPE = "IMMEDIATE";
 			}
 			Toast.makeText(testParameter, "Update application....", Toast.LENGTH_LONG).show();
-			checkForUpdate(appUpdateInfo);
+			
+
+			try {
+				appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+				
+				if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE)
+				{
+					 checkForUpdate(appUpdateInfo);
+				}
+			});
+			}
+			catch (final Exception e) {
+                e.printStackTrace();
+				String str=e.getMessage();
+				callbackContext.error(str);
+				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
+            }
 
 		}
 
