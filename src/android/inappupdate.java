@@ -145,9 +145,10 @@ public class inappupdate extends CordovaPlugin {
 
     /* Displays the snackbar notification and call to action. */
     private void popupSnackbarForCompleteUpdate() {
+		Toast.makeText(testParameter, "Show snackbar! ", Toast.LENGTH_LONG).show();
         final Snackbar snackbar = Snackbar.make(layout, "An update has just been downloaded.",
                             Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
+        snackbar.setAction("Install", view -> appUpdateManager.completeUpdate());
         snackbar.show();
     }
 
@@ -157,7 +158,11 @@ public class inappupdate extends CordovaPlugin {
                 // After the update is downloaded, show a notification
                 // and request user confirmation to restart the app.
                 popupSnackbarForCompleteUpdate();
-        }
+        } else if (state.installStatus() == InstallStatus.CANCELED){
+			Toast.makeText(testParameter, "Update canceled ", Toast.LENGTH_LONG).show();
+		}else if (state.installStatus() == InstallStatus.FAILED){
+			Toast.makeText(testParameter, "Update failed ", Toast.LENGTH_LONG).show();
+		}
     };
 
  	@Override
