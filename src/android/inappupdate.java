@@ -44,16 +44,11 @@ public class inappupdate extends CordovaPlugin {
  
 		testParameter = (cordova.getActivity()).getBaseContext();
 
-
-
-
 		// Creates instance of the manager.
 		appUpdateManager = AppUpdateManagerFactory.create(testParameter);
 
 		// Returns an intent object that you use to check for an update.
 		Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
-
-
 
 		if (action.equals("isUpdateAvailable"))
 		{
@@ -98,12 +93,12 @@ public class inappupdate extends CordovaPlugin {
 	}
 
 	public void checkForUpdate(final AppUpdateInfo appUpdateInfo) {
-			int updateType = 0;
-            if (IN_APP_UPDATE_TYPE.equals("FLEXIBLE")) {
-                    listener = state -> {
-                            onStateUpdate(state);
-                    };
-                    appUpdateManager.registerListener(listener);
+		int updateType = 0;
+        if (IN_APP_UPDATE_TYPE.equals("FLEXIBLE")) {
+                listener = state -> {
+                        onStateUpdate(state);
+                };
+                appUpdateManager.registerListener(listener);
             }else{
 				updateType = 1;
 			}
@@ -116,26 +111,27 @@ public class inappupdate extends CordovaPlugin {
 				String str=e.getMessage();
 				callbackContext.error(str);
 				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
-            }
+        }
     }
 
     /* Displays the snackbar notification and call to action. */
     private void popupSnackbarForCompleteUpdate() {
-            final Snackbar snackbar = Snackbar.make(layout, "An update has just been downloaded.",
+        final Snackbar snackbar = Snackbar.make(layout, "An update has just been downloaded.",
                             Snackbar.LENGTH_INDEFINITE);
-            snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
-            snackbar.show();
+        snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
+        snackbar.show();
     }
 
 	public void onStateUpdate(final InstallState state) {
-            if (state.installStatus() == InstallStatus.DOWNLOADED) {
-				Toast.makeText(testParameter, "Update downloaded! ", Toast.LENGTH_LONG).show();
-                    // After the update is downloaded, show a notification
-                    // and request user confirmation to restart the app.
-                    popupSnackbarForCompleteUpdate();
-            }
+        if (state.installStatus() == InstallStatus.DOWNLOADED) {
+			Toast.makeText(testParameter, "Update downloaded! ", Toast.LENGTH_LONG).show();
+                // After the update is downloaded, show a notification
+                // and request user confirmation to restart the app.
+                popupSnackbarForCompleteUpdate();
+        }
     };
 
+ 	@Override
 	public void onResume(final boolean multitasking) {
         super.onResume(multitasking);
         appUpdateManager
