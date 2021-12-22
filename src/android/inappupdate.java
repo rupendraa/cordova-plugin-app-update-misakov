@@ -50,9 +50,10 @@ public class inappupdate extends CordovaPlugin {
 		if (action.equals("isUpdateAvailable"))
 		{
 			Toast.makeText(testParameter, "isUpdateAvailable", Toast.LENGTH_LONG).show();
+			callbackContext.success("Hello world !@!!!!");
 			// Checks that the platform will allow the specified type of update.
 			appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-				callbackContext.success(appUpdateInfo);
+				
 				// if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
 				// 		// For a flexible update, use AppUpdateType.FLEXIBLE
 				// 		&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
