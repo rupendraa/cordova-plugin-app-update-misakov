@@ -15,6 +15,8 @@
 	
 	
 	  <framework custom="true" src="src/android/android-play-core.gradle" type="gradleReference" />
+    <framework src="com.android.support:appcompat-v7:+" />
+    <framework src="com.android.support:design:+" />
 	
   </platform>
 </plugin>
