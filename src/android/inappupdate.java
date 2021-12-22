@@ -12,6 +12,8 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.widget.Toast;
 import android.support.design.widget.Snackbar;
+import android.widget.FrameLayout;
+
 
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
@@ -133,10 +135,9 @@ public class inappupdate extends CordovaPlugin {
                     appUpdateManager.startUpdateFlowForResult(appUpdateInfo, updateType, cordova.getActivity(),
                                     REQUEST_CODE);
             } catch (final Exception e) {
-				
                 e.printStackTrace();
 				String str=e.getMessage();
-				callbackContext.error(str);
+				_callbackContex.error(str);
 				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
         }
     }
@@ -176,6 +177,9 @@ public class inappupdate extends CordovaPlugin {
                             checkForUpdate(appUpdateInfo);
                         } catch (Exception e) {
                             e.printStackTrace();
+							String str=e.getMessage();
+							_callbackContex.error(str);
+							Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
                         }
                     }
                 });
