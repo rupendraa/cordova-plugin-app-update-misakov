@@ -68,17 +68,6 @@ public class inappupdate extends CordovaPlugin {
 		{
 			// Checks that the platform will allow the specified type of update.
 			appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-				try {
-				 final Snackbar snackbar = Snackbar.make(layout, "Hello world",Snackbar.LENGTH_INDEFINITE);
-        		snackbar.setAction("Hello world", view -> {});
-        		snackbar.show();
-			}
-			catch (final Exception e) {
-				String str=e.getMessage();
-				String stackTrace = Log.getStackTraceString(e);
-				callbackContext.error(str+stackTrace);
-				Toast.makeText(testParameter, "Snackbar error: "+str, Toast.LENGTH_LONG).show();
-            }
 				if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
 						// For a flexible update, use AppUpdateType.FLEXIBLE
 						&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
@@ -155,7 +144,6 @@ public class inappupdate extends CordovaPlugin {
 
     /* Displays the snackbar notification and call to action. */
     private void popupSnackbarForCompleteUpdate() {
-		Toast.makeText(testParameter, "Show snackbar! ", Toast.LENGTH_LONG).show();
         final Snackbar snackbar = Snackbar.make(layout, "An update has just been downloaded.",
                             Snackbar.LENGTH_INDEFINITE);
         snackbar.setAction("Install", view -> appUpdateManager.completeUpdate());
