@@ -38,6 +38,7 @@ public class inappupdate extends CordovaPlugin {
 
 	public int REQUEST_CODE = 7;
     private static String IN_APP_UPDATE_TYPE = "FLEXIBLE";
+	private static boolean isUpdateDownloaded = false;
 
 	private static AppUpdateManager appUpdateManager;
     private static InstallStateUpdatedListener listener;
@@ -66,25 +67,24 @@ public class inappupdate extends CordovaPlugin {
 
 		if (action.equals("isUpdateAvailable"))
 		{
+			if (isUpdateDownloaded){
+				 popupSnackbarForCompleteUpdate();
+			} else {
 			// Checks that the platform will allow the specified type of update.
-			appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
-				if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-						// For a flexible update, use AppUpdateType.FLEXIBLE
-						&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
-				{
-
-					Toast.makeText(testParameter, "Flexible update ready", Toast.LENGTH_LONG).show();
-					callbackContext.success("true");
-
-					// Request the update.
-				}
-				else
-				{
-					callbackContext.success("false");
-					Toast.makeText(testParameter, "No update available", Toast.LENGTH_LONG).show();
-
-				}
-			});
+				appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+					if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+							// For a flexible update, use AppUpdateType.FLEXIBLE
+							&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
+					{
+						Toast.makeText(testParameter, "Flexible update ready", Toast.LENGTH_LONG).show();
+						callbackContext.success("true");
+					}
+					else {
+						callbackContext.success("false");
+						Toast.makeText(testParameter, "No update available", Toast.LENGTH_LONG).show();
+					}
+				});
+			}
 
 			return true;
 		}
@@ -98,7 +98,6 @@ public class inappupdate extends CordovaPlugin {
 				IN_APP_UPDATE_TYPE = "IMMEDIATE";
 			}
 			Toast.makeText(testParameter, "Update application....", Toast.LENGTH_LONG).show();
-			
 
 			try {
 				appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
@@ -152,10 +151,9 @@ public class inappupdate extends CordovaPlugin {
 
 	public void onStateUpdate(final InstallState state) {
         if (state.installStatus() == InstallStatus.DOWNLOADED) {
+			isUpdateDownloaded = true;
 			Toast.makeText(testParameter, "Update downloaded! ", Toast.LENGTH_LONG).show();
-                // After the update is downloaded, show a notification
-                // and request user confirmation to restart the app.
-                popupSnackbarForCompleteUpdate();
+			popupSnackbarForCompleteUpdate();
         } else if (state.installStatus() == InstallStatus.CANCELED){
 			Toast.makeText(testParameter, "Update canceled ", Toast.LENGTH_LONG).show();
 		}else if (state.installStatus() == InstallStatus.FAILED){
