@@ -15,7 +15,6 @@ import android.support.design.widget.Snackbar;
 import android.widget.FrameLayout;
 import android.util.Log;
 
-
 import com.google.android.play.core.appupdate.AppUpdateInfo;
 import com.google.android.play.core.appupdate.AppUpdateManager;
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
@@ -27,22 +26,17 @@ import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.tasks.Task;
 
 
-
-
-/**
- * This class echoes a string called from JavaScript.
- */
 public class inappupdate extends CordovaPlugin {
 
-	CallbackContext _callbackContex;
-
 	public int REQUEST_CODE = 7;
+
     private static String IN_APP_UPDATE_TYPE = "FLEXIBLE";
 	private static boolean isUpdateDownloaded = false;
-
 	private static AppUpdateManager appUpdateManager;
     private static InstallStateUpdatedListener listener;
 	private static Context testParameter;
+
+	private CallbackContext _callbackContex;
 	private FrameLayout layout;
 
     @Override
@@ -53,16 +47,9 @@ public class inappupdate extends CordovaPlugin {
 
 	@Override
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
-
-
 		_callbackContex = callbackContext;
- 
 		testParameter = (cordova.getActivity()).getBaseContext();
-
-		// Creates instance of the manager.
 		appUpdateManager = AppUpdateManagerFactory.create(testParameter);
-
-		// Returns an intent object that you use to check for an update.
 		Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
 
 		if (action.equals("isUpdateAvailable"))
@@ -70,18 +57,16 @@ public class inappupdate extends CordovaPlugin {
 			if (isUpdateDownloaded){
 				 popupSnackbarForCompleteUpdate();
 			} else {
-			// Checks that the platform will allow the specified type of update.
 				appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
 					if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
 							// For a flexible update, use AppUpdateType.FLEXIBLE
 							&& appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE))
 					{
-						Toast.makeText(testParameter, "Flexible update ready", Toast.LENGTH_LONG).show();
+						//Toast.makeText(testParameter, "Flexible update ready", Toast.LENGTH_LONG).show();
 						callbackContext.success("true");
-					}
-					else {
+					} else {
 						callbackContext.success("false");
-						Toast.makeText(testParameter, "No update available", Toast.LENGTH_LONG).show();
+						//Toast.makeText(testParameter, "No update available", Toast.LENGTH_LONG).show();
 					}
 				});
 			}
@@ -97,7 +82,7 @@ public class inappupdate extends CordovaPlugin {
 			{
 				IN_APP_UPDATE_TYPE = "IMMEDIATE";
 			}
-			Toast.makeText(testParameter, "Update application....", Toast.LENGTH_LONG).show();
+			//Toast.makeText(testParameter, "Update application....", Toast.LENGTH_LONG).show();
 
 			try {
 				appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
@@ -112,9 +97,8 @@ public class inappupdate extends CordovaPlugin {
 				String str=e.getMessage();
 				String stackTrace = Log.getStackTraceString(e);
 				callbackContext.error(str+stackTrace);
-				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
+				//Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
             }
-
 		}
 
 		return false;
@@ -127,37 +111,37 @@ public class inappupdate extends CordovaPlugin {
                         onStateUpdate(state);
                 };
                 appUpdateManager.registerListener(listener);
-            }else{
+            } else {
 				updateType = 1;
 			}
+
             try {
-                    appUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.FLEXIBLE, cordova.getActivity(),
+                    appUpdateManager.startUpdateFlowForResult(appUpdateInfo, updateType, cordova.getActivity(),
                                     REQUEST_CODE);
             } catch (final Exception e) {
 				String str=e.getMessage();
 				String stackTrace = Log.getStackTraceString(e);
 				_callbackContex.error(str+stackTrace);
-				Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
+				//Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
         }
     }
 
-    /* Displays the snackbar notification and call to action. */
     private void popupSnackbarForCompleteUpdate() {
-        final Snackbar snackbar = Snackbar.make(layout, "An update has just been downloaded.",
+        final Snackbar snackbar = Snackbar.make(layout, "Update has been downloaded.",
                             Snackbar.LENGTH_INDEFINITE);
-        snackbar.setAction("Install", view -> appUpdateManager.completeUpdate());
+        snackbar.setAction("Update app", view -> appUpdateManager.completeUpdate());
         snackbar.show();
     }
 
 	public void onStateUpdate(final InstallState state) {
         if (state.installStatus() == InstallStatus.DOWNLOADED) {
 			isUpdateDownloaded = true;
-			Toast.makeText(testParameter, "Update downloaded! ", Toast.LENGTH_LONG).show();
+			//Toast.makeText(testParameter, "Update downloaded! ", Toast.LENGTH_LONG).show();
 			popupSnackbarForCompleteUpdate();
         } else if (state.installStatus() == InstallStatus.CANCELED){
-			Toast.makeText(testParameter, "Update canceled ", Toast.LENGTH_LONG).show();
-		}else if (state.installStatus() == InstallStatus.FAILED){
-			Toast.makeText(testParameter, "Update failed ", Toast.LENGTH_LONG).show();
+			Toast.makeText(testParameter, "Update app canceled ", Toast.LENGTH_LONG).show();
+		} else if (state.installStatus() == InstallStatus.FAILED){
+			Toast.makeText(testParameter, "Update app failed ", Toast.LENGTH_LONG).show();
 		}
     };
 
@@ -181,7 +165,7 @@ public class inappupdate extends CordovaPlugin {
 							String str=e.getMessage();
 							String stackTrace = Log.getStackTraceString(e);
 							_callbackContex.error(str+stackTrace);
-							Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
+							//Toast.makeText(testParameter, "Update error: "+str, Toast.LENGTH_LONG).show();
                         }
                     }
                 });
