@@ -14,7 +14,7 @@
     <source-file src="src/android/inappupdate.java" target-dir="src/cordova/plugin/codeplay/in/app/update/inappupdate" />
 	
 	  <edit-config file="AndroidManifest.xml" target="/manifest/application/activity[@android:name='MainActivity']" mode="merge">
-        <activity android:name="MainActivity" android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name="MainActivity" android:theme="@style/Theme.App.SplashScreen" />
     </edit-config>
 	  <framework custom="true" src="src/android/android-play-core.gradle" type="gradleReference" />
     <framework src="com.android.support:appcompat-v7:+" />
